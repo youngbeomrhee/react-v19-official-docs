@@ -17,20 +17,43 @@ function Square({
 export default function Game() {
   const [xIsNext, setXIsNext] = useState(true);
   const [history, setHistory] = useState<string[][]>([Array(9).fill(null)]);
-  const currentSquares = history[history.length - 1];
+  const [currentMove, setCurrentMove] = useState(0);
+  // (항상 마지막 동작을 렌더링하지 않고) 특정 시점의 상태를 랜더링
+  const currentSquares = history[currentMove];
 
   function handlePlay(nextSquares: string[]) {
-    setHistory([...history, nextSquares]);
+    // 특정 시점의 상태에서 플레이를 시작한 경우 해당 시점까지의 히스토리만 유지
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
     setXIsNext(!xIsNext);
   }
 
+  function jumpTo(nextMove: number) {
+    setCurrentMove(nextMove);
+    setXIsNext(nextMove % 2 === 0);
+  }
+
+  const moves = history.map((squares, move) => {
+    let description;
+    if (move > 0) {
+      description = 'Go to move #' + move;
+    } else {
+      description = 'Go to game start';
+    }
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
   return (
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <ol>{/* todo */}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   );
