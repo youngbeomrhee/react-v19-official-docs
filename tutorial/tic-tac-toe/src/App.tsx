@@ -1,50 +1,50 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 function Square({
   value,
   onSquareClick,
 }: {
-  value: string | null;
-  onSquareClick: () => void;
+  value: string | null
+  onSquareClick: () => void
 }) {
   return (
     <button className="square" onClick={onSquareClick}>
       {value}
     </button>
-  );
+  )
 }
 
 export default function Game() {
-  const [history, setHistory] = useState<string[][]>([Array(9).fill(null)]);
-  const [currentMove, setCurrentMove] = useState(0);
-  const xIsNext = currentMove % 2 === 0;
+  const [history, setHistory] = useState<string[][]>([Array(9).fill(null)])
+  const [currentMove, setCurrentMove] = useState(0)
+  const xIsNext = currentMove % 2 === 0
   // (항상 마지막 동작을 렌더링하지 않고) 특정 시점의 상태를 랜더링
-  const currentSquares = history[currentMove];
+  const currentSquares = history[currentMove]
 
   function handlePlay(nextSquares: string[]) {
     // 특정 시점의 상태에서 플레이를 시작한 경우 해당 시점까지의 히스토리만 유지
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
-    setHistory(nextHistory);
-    setCurrentMove(nextHistory.length - 1);
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]
+    setHistory(nextHistory)
+    setCurrentMove(nextHistory.length - 1)
   }
 
   function jumpTo(nextMove: number) {
-    setCurrentMove(nextMove);
+    setCurrentMove(nextMove)
   }
 
   const moves = history.map((_, move) => {
-    let description;
+    let description
     if (move > 0) {
-      description = 'Go to move #' + move;
+      description = 'Go to move #' + move
     } else {
-      description = 'Go to game start';
+      description = 'Go to game start'
     }
     return (
       <li key={move}>
         <button onClick={() => jumpTo(move)}>{description}</button>
       </li>
-    );
-  });
+    )
+  })
   return (
     <div className="game">
       <div className="game-board">
@@ -54,7 +54,7 @@ export default function Game() {
         <ol>{moves}</ol>
       </div>
     </div>
-  );
+  )
 }
 
 function Board({
@@ -62,26 +62,26 @@ function Board({
   squares,
   onPlay,
 }: {
-  xIsNext: boolean;
-  squares: string[];
-  onPlay: (nextSquares: string[]) => void;
+  xIsNext: boolean
+  squares: string[]
+  onPlay: (nextSquares: string[]) => void
 }) {
-  const winner = calculateWinner(squares);
-  let status;
+  const winner = calculateWinner(squares)
+  let status
   if (winner) {
-    status = 'Winner: ' + winner;
+    status = 'Winner: ' + winner
   } else {
-    status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+    status = 'Next player: ' + (xIsNext ? 'X' : 'O')
   }
   function handleClick(i: number) {
     // 이미 값이 있으면 변경 못하도록 return
     if (squares[i] !== null || calculateWinner(squares)) {
-      return;
+      return
     }
     // 원본의 훼손 방지
-    const nextSquares = squares.slice();
-    nextSquares[i] = xIsNext ? 'X' : 'O';
-    onPlay(nextSquares);
+    const nextSquares = squares.slice()
+    nextSquares[i] = xIsNext ? 'X' : 'O'
+    onPlay(nextSquares)
   }
 
   return (
@@ -103,7 +103,7 @@ function Board({
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
     </>
-  );
+  )
 }
 
 function calculateWinner(squares: string[]) {
@@ -116,12 +116,12 @@ function calculateWinner(squares: string[]) {
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6],
-  ];
+  ]
   for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
+    const [a, b, c] = lines[i]
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return squares[a]
     }
   }
-  return null;
+  return null
 }
