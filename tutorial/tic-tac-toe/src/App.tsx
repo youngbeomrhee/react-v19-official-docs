@@ -15,9 +15,9 @@ function Square({
 }
 
 export default function Game() {
-  const [xIsNext, setXIsNext] = useState(true);
   const [history, setHistory] = useState<string[][]>([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0;
   // (항상 마지막 동작을 렌더링하지 않고) 특정 시점의 상태를 랜더링
   const currentSquares = history[currentMove];
 
@@ -26,15 +26,13 @@ export default function Game() {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
-    setXIsNext(!xIsNext);
   }
 
   function jumpTo(nextMove: number) {
     setCurrentMove(nextMove);
-    setXIsNext(nextMove % 2 === 0);
   }
 
-  const moves = history.map((squares, move) => {
+  const moves = history.map((_, move) => {
     let description;
     if (move > 0) {
       description = 'Go to move #' + move;
