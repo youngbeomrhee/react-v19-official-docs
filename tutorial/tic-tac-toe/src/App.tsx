@@ -14,10 +14,37 @@ function Square({
   );
 }
 
-export default function Board() {
+export default function Game() {
   const [xIsNext, setXIsNext] = useState(true);
-  const [squares, setSquares] = useState<string[]>(Array(9).fill(null));
+  const [history, setHistory] = useState<string[][]>([Array(9).fill(null)]);
+  const currentSquares = history[history.length - 1];
 
+  function handlePlay(nextSquares: string[]) {
+    setHistory([...history, nextSquares]);
+    setXIsNext(!xIsNext);
+  }
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+      </div>
+      <div className="game-info">
+        <ol>{/* todo */}</ol>
+      </div>
+    </div>
+  );
+}
+
+function Board({
+  xIsNext,
+  squares,
+  onPlay,
+}: {
+  xIsNext: boolean;
+  squares: string[];
+  onPlay: (nextSquares: string[]) => void;
+}) {
   const winner = calculateWinner(squares);
   let status;
   if (winner) {
@@ -25,7 +52,6 @@ export default function Board() {
   } else {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
-
   function handleClick(i: number) {
     // 이미 값이 있으면 변경 못하도록 return
     if (squares[i] !== null || calculateWinner(squares)) {
@@ -34,8 +60,7 @@ export default function Board() {
     // 원본의 훼손 방지
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? 'X' : 'O';
-    setSquares(nextSquares);
-    setXIsNext(!xIsNext);
+    onPlay(nextSquares);
   }
 
   return (
