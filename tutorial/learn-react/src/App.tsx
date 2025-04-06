@@ -1,5 +1,3 @@
-import Gallery from "./Gallery";
-
 export default function App() {
-  return <Gallery />;
+  return <h1>Hello, world!</h1>;
 }
